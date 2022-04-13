@@ -57,6 +57,7 @@ export class BFRunner<T extends number, U extends TypedArray<T>> {
       }
       case InstructionType.Input: {
         if (this.inputP >= this.inputBuffer.length) {
+          if (this.inputClosed) break
           return Message.AwaitingInput
         }
         if (!this.inBounds(this.mp)) return Message.PointerOverflow
