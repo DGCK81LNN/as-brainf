@@ -2,26 +2,37 @@
 <html lang="en">
 <head>
 <script type="module">
+document.open()
 document.write("<pre>")
-import { init, step, getMemory } from "./build/debug.js"
-const program = ">>>>>+[-->-[>>+>-----<<]<--<---]>-.>>>+.>>..+++[.>]<<<<.+++.------.<<-.>>>>+."
-const input = new TextEncoder().encode("jdsb\n")
-let ic = 0
-init(program, 1000)
-let t = Date.now()
-let r = step(0, 0)
-let [pc, ot, ov] = r
-while (ot >= 0) {
-  if (Date.now() - t > 10000) break
-  let it = 0, iv = 0
-  if (ot === 0x2c) { it = 0x2c, iv = ic < input.length ? input[ic++] : ov }
-  else if (ot === 0x2e) document.write(String.fromCharCode(ov))
-  //console.log(pc, ot, ov, it, iv)
-  ;[pc, ot, ov] = r = step(it, iv)
-}
-console.log(pc, ot, ov)
-    console.log("halt", getMemory())
-document.write("\n\n\n" + (Date.now() - t) + "</pre>")
+import * as e from "./build/release.js"
+Object.assign(window, e)
+const input = "10\n20\n30\n40\n50\n60\n70\n80\n90\n100\n110\n120\n130\n140\n"
+const source = `>>>>>+[-->-[>>+>-----<<]<--<---]>-.>>>+.>>..+++[.>]<<<<.+++.------.<<-.>>>>+.`
+
+console.time("compile")
+const runner = e.createRunner(source, 3000)
+console.timeEnd("compile")
+console.log("runner", runner)
+console.log("program", getProgram(runner))
+
+const inputA = new TextEncoder().encode(input)
+console.log("input", inputA)
+e.input(runner, inputA)
+e.setInputClosed(runner)
+
+let msg
+console.time("run")
+while ((msg = e.stepsTime(runner, 10000)) === 0) {}
+console.timeEnd("run")
+console.log("message", msg)
+
+console.log("ip", getIp(runner))
+console.log("memory", getMemory(runner))
+console.log("mp", getMp(runner))
+
+let o = e.flushOutput(runner)
+console.log("output", o)
+if (o) document.write(new TextDecoder().decode(o))
 </script>
 </head>
 <body></body>
