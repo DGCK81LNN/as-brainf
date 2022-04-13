@@ -1,26 +1,24 @@
+export { tokenize } from "./tokenize"
 import { compile as compile_ } from "./compile"
 import { BFRunner } from "./runner"
 import { BFProgram } from "./types"
-export { tokenize } from "./tokenize"
 
-class BFRunnerI8 extends BFRunner<i8, Int8Array> {}
+type CellType = u8
+type MemoryType = Uint8Array
 
-export function createRunnerI8(source: string, ms: i32): BFRunnerI8 {
-  return new BFRunnerI8(compile_<i8>(source), ms)
+export function compile(source: string): BFProgram<CellType> {
+  return compile_<CellType>(source)
 }
 
-type CellType = i32
-type MemoryType = Int32Array
-
-export function createRunner(source: string, ms: i32): BFRunner<CellType, MemoryType> {
-  return new BFRunner<CellType, MemoryType>(compile_<CellType>(source), ms)
+export function createRunner(source: string, memorySize: i32): BFRunner<CellType, MemoryType> {
+  return new BFRunner<CellType, MemoryType>(compile(source), memorySize)
 }
 
-export function steps(runner: BFRunner<CellType, MemoryType>, ms: i32): i32 {
-  return runner.steps(ms)
+export function steps(runner: BFRunner<CellType, MemoryType>, maxSteps: i32): i32 {
+  return runner.steps(maxSteps)
 }
-export function stepsTime(runner: BFRunner<CellType, MemoryType>, ms: i32): i32 {
-  return runner.stepsTime(ms)
+export function stepsTime(runner: BFRunner<CellType, MemoryType>, maxTime: i32): i32 {
+  return runner.stepsTime(maxTime)
 }
 export function flushOutput(runner: BFRunner<CellType, MemoryType>): MemoryType | null {
   return runner.flushOutput()

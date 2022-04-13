@@ -1,39 +1,72 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang=en>
 <head>
-<script type="module">
-document.open()
-document.write("<pre>")
-import * as e from "./build/release.js"
-Object.assign(window, e)
-const input = "10\n20\n30\n40\n50\n60\n70\n80\n90\n100\n110\n120\n130\n140\n"
-const source = `>>>>>+[-->-[>>+>-----<<]<--<---]>-.>>>+.>>..+++[.>]<<<<.+++.------.<<-.>>>>+.`
-
-console.time("compile")
-const runner = e.createRunner(source, 3000)
-console.timeEnd("compile")
-console.log("runner", runner)
-console.log("program", getProgram(runner))
-
-const inputA = new TextEncoder().encode(input)
-console.log("input", inputA)
-e.input(runner, inputA)
-e.setInputClosed(runner)
-
-let msg
-console.time("run")
-while ((msg = e.stepsTime(runner, 10000)) === 0) {}
-console.timeEnd("run")
-console.log("message", msg)
-
-console.log("ip", getIp(runner))
-console.log("memory", getMemory(runner))
-console.log("mp", getMp(runner))
-
-let o = e.flushOutput(runner)
-console.log("output", o)
-if (o) document.write(new TextDecoder().decode(o))
-</script>
+  <meta charset=utf-8>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name=viewport content="width=device-width,initial-scale=1.0">
+  <title>AS brainf</title>
+  <link rel=stylesheet crossorigin=anonymous
+    href="https://dgck81lnn.github.io/bootstrap-lnn/dist/bootstrap-lnn.min.css">
 </head>
-<body></body>
+<body>
+  <main class="m-2">
+    <div class="mb-1">
+      <textarea id=codebox class="form-control font-monospace" placeholder="brainf code" rows=5
+      >>++++++++[-&lt;+++++++++>]&lt;.>>+>-[+]++>++>+++[>[->+++&lt;&lt;+++>]&lt;&lt;]>-----.>->+++..+++.>-.&lt;&lt;+[>[+>+]>>]&lt;--------------.>>.+++.------.--------.>+.>+.</textarea>
+    </div>
+    <div class="mb-1">
+      <textarea id=text class="form-control font-monospace" placeholder="program input" rows=3></textarea>
+    </div>
+    <div class="d-flex mb-1">
+      <button id=btn class="btn btn-primary flex-fill">run</button>
+    </div>
+    <div>
+      <textarea id=out readonly class="form-control font-monospace" placeholder="output" rows=8></textarea>
+    </div>
+  </main>
+  <script>
+    if (navigator.platform.match(/^iP|^Mac/))
+      document.querySelector("meta[name=viewport]").content += ", user-scalable=no"
+  </script>
+  <script type=module>
+    import * as ASBrainf from "./build/release.js"
+    window.ASBrainf = ASBrainf
+
+    const $code = document.getElementById("codebox")
+    const $text = document.getElementById("text")
+    const $btn = document.getElementById("btn")
+    const $out = document.getElementById("out")
+
+    $btn.onclick = () => {
+      console.time("compile")
+      let runner = window.ASBrainfRunner = ASBrainf.createRunner($code.value, 3000)
+      console.timeEnd("compile")
+      console.log("runner", runner)
+      console.log("program", ASBrainf.getProgram(runner))
+
+      const input = new TextEncoder().encode($text.value)
+      console.log("input", input)
+      ASBrainf.input(runner, input)
+      ASBrainf.setInputClosed(runner)
+
+      let msg
+      console.time("run")
+      while ((msg = ASBrainf.stepsTime(runner, 10000)) === 0) { }
+      console.timeEnd("run")
+
+      if (msg === 0) alert("Timeout")
+      else if (msg === 1) alert("Error: pointer overflow")
+      else if (msg === 2) alert("Error: dead simple loop")
+      else if (msg === 3) alert("Error: unknown internal error")
+
+      console.log("ip", ASBrainf.getIp(runner))
+      console.log("memory", ASBrainf.getMemory(runner))
+      console.log("mp", ASBrainf.getMp(runner))
+
+      let out = ASBrainf.flushOutput(runner)
+      console.log("output", out)
+      $out.value = out ? new TextDecoder().decode(out) : ""
+    }
+  </script>
+</body>
 </html>
