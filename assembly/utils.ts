@@ -6,6 +6,10 @@
  * Calculate how many times a simple loop will run.
  *
  * Returns 0 when it's a dead loop.
+ *
+ * Algorithm by FCC <https://github.com/1stchrc>
+ *
+ * How does it work? Idk, it just works ;D
  */
 export function simpleLoop<T extends number>(initial: T, delta: T): u64 {
   let loops: u64 = 0
